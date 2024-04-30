@@ -10,20 +10,12 @@ import {
 } from "@/components/ui/command";
 import { Currencies, Currency } from "@/lib/currencies";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import React, { useEffect } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 import { Button } from "@/components/ui/button";
+import React from "react";
 import SkeletonWrapper from "@/components/SkeletonWrapper";
-import { UpdateUserCurrency } from "@/app/onboarding/_actions/userSettings";
 // import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
-import { UserSettings } from "@prisma/client";
-import { toast } from "sonner";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function CurrencyComboBox() {
@@ -33,10 +25,48 @@ export function CurrencyComboBox() {
         null
     );
 
+
+    if (isDesktop) {
+        return (
+            <SkeletonWrapper isLoading={false}>
+                <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            disabled={false}
+                        >
+                            {selectedOption ? <>{selectedOption.label}</> : <>Set currency</>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0" align="start">
+                        <OptionList setOpen={setOpen} setSelectedOption={setSelectedOption} />
+                    </PopoverContent>
+                </Popover>
+            </SkeletonWrapper>
+        );
+    }
     return (
-        <div>
-            CurrencyComboBox
-        </div>
+        <SkeletonWrapper isLoading={true}>
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        disabled={true}
+                    >
+                        {selectedOption ? <>{selectedOption.label}</> : <>Set currency</>}
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <div className="mt-4 border-t">
+                        <OptionList setOpen={setOpen}
+                            setSelectedOption={setSelectedOption}
+                        />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        </SkeletonWrapper>
     );
 }
 
