@@ -43,6 +43,7 @@ export function CurrencyComboBox() {
 
 
 
+
     const mutation = useMutation({
         mutationFn: UpdateUserCurrency,
         onSuccess: (data: UserSettings) => {
@@ -62,7 +63,21 @@ export function CurrencyComboBox() {
         },
     });
 
+    const selectOption = useCallback(
+        (currency: Currency | null) => {
+            if (!currency) {
+                toast.error("Please select a currency");
+                return;
+            }
 
+            toast.loading("Updating currency...", {
+                id: "update-currency",
+            });
+
+            mutation.mutate(currency.value);
+        },
+        [mutation]
+    );
 
     if (isDesktop) {
         return (
@@ -78,7 +93,7 @@ export function CurrencyComboBox() {
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0" align="start">
-                        <OptionList setOpen={setOpen} setSelectedOption={setSelectedOption} />
+                        <OptionList setOpen={setOpen} setSelectedOption={selectOption} />
                     </PopoverContent>
                 </Popover>
             </SkeletonWrapper>
@@ -99,7 +114,7 @@ export function CurrencyComboBox() {
                 <DrawerContent>
                     <div className="mt-4 border-t">
                         <OptionList setOpen={setOpen}
-                            setSelectedOption={setSelectedOption}
+                            setSelectedOption={selectOption}
                         />
                     </div>
                 </DrawerContent>
