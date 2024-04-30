@@ -11,9 +11,9 @@ import {
 import { Currencies, Currency } from "@/lib/currencies";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import React, { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
-import React from "react";
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { UserSettings } from "@prisma/client";
 // import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
@@ -31,6 +31,14 @@ export function CurrencyComboBox() {
         queryKey: ["userSettings"],
         queryFn: () => fetch("/api/user-settings").then((res) => res.json()),
     });
+
+    useEffect(() => {
+        if (!userSettings.data) return;
+        const userCurrency = Currencies.find(
+            (currency) => currency.value === userSettings.data.currency
+        );
+        if (userCurrency) setSelectedOption(userCurrency);
+    }, [userSettings.data]);
 
     if (isDesktop) {
         return (
