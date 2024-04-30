@@ -11,14 +11,15 @@ import {
 import { Currencies, Currency } from "@/lib/currencies";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/SkeletonWrapper";
+import { UpdateUserCurrency } from "@/app/onboarding/_actions/userSettings";
 import { UserSettings } from "@prisma/client";
-// import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
+import { toast } from "sonner";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useQuery } from "@tanstack/react-query";
 
 export function CurrencyComboBox() {
     const [open, setOpen] = React.useState(false);
@@ -40,6 +41,29 @@ export function CurrencyComboBox() {
         if (userCurrency) setSelectedOption(userCurrency);
     }, [userSettings.data]);
 
+
+
+    const mutation = useMutation({
+        mutationFn: UpdateUserCurrency,
+        onSuccess: (data: UserSettings) => {
+            toast.success(`Currency updated successuflly 🎉`, {
+                id: "update-currency",
+            });
+
+            setSelectedOption(
+                Currencies.find((c) => c.value === data.currency) || null
+            );
+        },
+        onError: (e) => {
+            console.error(e);
+            toast.error("Something went wrong", {
+                id: "update-currency",
+            });
+        },
+    });
+
+
+
     if (isDesktop) {
         return (
             <SkeletonWrapper isLoading={userSettings.isFetching}>
@@ -48,7 +72,7 @@ export function CurrencyComboBox() {
                         <Button
                             variant="outline"
                             className="w-full justify-start"
-                            disabled={false}
+                            disabled={mutation.isPending}
                         >
                             {selectedOption ? <>{selectedOption.label}</> : <>Set currency</>}
                         </Button>
@@ -67,7 +91,7 @@ export function CurrencyComboBox() {
                     <Button
                         variant="outline"
                         className="w-full justify-start"
-                        disabled={true}
+                        disabled={mutation.isPending}
                     >
                         {selectedOption ? <>{selectedOption.label}</> : <>Set currency</>}
                     </Button>
