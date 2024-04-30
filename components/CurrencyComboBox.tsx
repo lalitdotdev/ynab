@@ -15,8 +15,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import SkeletonWrapper from "@/components/SkeletonWrapper";
+import { UserSettings } from "@prisma/client";
 // import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useQuery } from "@tanstack/react-query";
 
 export function CurrencyComboBox() {
     const [open, setOpen] = React.useState(false);
@@ -25,10 +27,14 @@ export function CurrencyComboBox() {
         null
     );
 
+    const userSettings = useQuery<UserSettings>({
+        queryKey: ["userSettings"],
+        queryFn: () => fetch("/api/user-settings").then((res) => res.json()),
+    });
 
     if (isDesktop) {
         return (
-            <SkeletonWrapper isLoading={false}>
+            <SkeletonWrapper isLoading={userSettings.isFetching}>
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                         <Button
@@ -47,7 +53,7 @@ export function CurrencyComboBox() {
         );
     }
     return (
-        <SkeletonWrapper isLoading={true}>
+        <SkeletonWrapper isLoading={userSettings.isFetching}>
             <Drawer open={open} onOpenChange={setOpen}>
                 <DrawerTrigger asChild>
                     <Button
