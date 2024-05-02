@@ -1,4 +1,4 @@
-
+import { Currencies } from '@/lib/currencies';
 
 export function DateToUTCDate(date: Date) {
   return new Date(
@@ -14,3 +14,11 @@ export function DateToUTCDate(date: Date) {
   );
 }
 
+export function GetFormatterForCurrency(currency: string) {
+  const locale = Currencies.find((c) => c.value === currency)?.locale;
+
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  });
+}
