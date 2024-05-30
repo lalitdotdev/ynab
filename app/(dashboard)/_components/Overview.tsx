@@ -1,12 +1,14 @@
 "use client"
 
+import React, { useState } from 'react'
 import { differenceInDays, startOfMonth } from 'date-fns'
 
+import CategoriesStats from './CategoriesStats'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { MAX_DATE_RANGE_DAYS } from '@/lib/constants'
+import StatsCards from './StatsCards'
 import { UserSettings } from '@prisma/client'
 import { toast } from 'sonner'
-import { useState } from 'react'
 
 type Props = {
     userSettings: UserSettings
@@ -44,9 +46,22 @@ const Overview = ({ userSettings }: Props) => {
                     />
                 </div>
             </div>
+            <div className='container flex w-full flex-col gap-2'>
+                <StatsCards
+                    userSettings={userSettings}
+                    from={dateRange.from}
+                    to={dateRange.to}
+                />
+
+                <CategoriesStats
+                    userSettings={userSettings}
+                    from={dateRange.from}
+                    to={dateRange.to}
+                />
+            </div>
 
         </>
-    )/*  */
+    )
 }
 
 export default Overview
