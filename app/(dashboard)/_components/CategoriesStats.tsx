@@ -25,8 +25,17 @@ const CategoriesStats = ({
 
 }: Props) => {
 
+    const statsQuery = useQuery({
+        queryKey: ["overview", "stats", "categories", from, to],
+        queryFn: () =>
+            fetch(
+                `/api/stats/categories?from=${DateToUTCDate(from)}&to=${DateToUTCDate(to)}`
+            ).then((res) => res.json()),
+    });
 
-
+    const formatter = useMemo(() => {
+        return GetFormatterForCurrency(userSettings.currency)
+    }, []);
 
 
 
@@ -34,16 +43,16 @@ const CategoriesStats = ({
         <div className="flex w-full flex-wrap gap-2 md:flex-nowrap">
             {/* <SkeletonWrapper isLoading={statsQuery.isFetching}> */}
             <CategoriesCard
-
+                formatter={formatter}
                 type="income"
-                // data={statsQuery.data || []}
+                data={statsQuery.data || []}
             />
             {/* </SkeletonWrapper> */}
             {/* <SkeletonWrapper isLoading={statsQuery.isFetching}> */}
             <CategoriesCard
-
+                formatter={formatter}
                 type="expense"
-                // data={statsQuery.data || []}
+                data={statsQuery.data || []}
             />
             {/* </SkeletonWrapper> */}
         </div>
@@ -59,10 +68,10 @@ export default CategoriesStats
 function CategoriesCard({
     data,
     type,
-
+    formatter,
 }: {
     type: TransactionType;
-
+    formatter: Intl.NumberFormat;
     data: GetCategoriesStatsResponseType;
 }) {
     // filtered data
@@ -109,7 +118,9 @@ function CategoriesCard({
                                                 </span>
                                             </span>
 
-
+                                            <span className="text-sm text-gray-400">
+                                                {formatter.format(amount)}
+                                            </span>
                                         </div>
 
                                         <Progress
