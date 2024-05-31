@@ -139,6 +139,17 @@ function TransactionTable({ from, to }: Props) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+    const history = useQuery<GetTransactionHistoryResponseType>({
+        queryKey: ["transactions", "history", from, to],
+        queryFn: () =>
+            fetch(
+                `/api/transactions-history?from=${DateToUTCDate(
+                    from
+                )}&to=${DateToUTCDate(to)}`
+            ).then((res) => res.json()),
+    });
+
+
 
     const table = useReactTable({
         data: history.data || emptyData,
@@ -154,7 +165,6 @@ function TransactionTable({ from, to }: Props) {
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
-
 
 
     return (
@@ -181,9 +191,7 @@ function TransactionTable({ from, to }: Props) {
                 </div>
 
             </div>
-            <SkeletonWrapper
-            // isLoading={history.isFetching}
-            >
+            <SkeletonWrapper isLoading={history.isFetching}>
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
