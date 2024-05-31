@@ -23,9 +23,25 @@ interface Props {
 }
 
 function DeleteTransactionDialog({ open, setOpen, transactionId }: Props) {
-    // const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
+    const deleteMutation = useMutation({
+        mutationFn: DeleteTransaction,
+        onSuccess: async () => {
+            toast.success("Transaction deleted successfully", {
+                id: transactionId,
+            });
 
+            await queryClient.invalidateQueries({
+                queryKey: ["transactions"],
+            });
+        },
+        onError: () => {
+            toast.error("Something went wrong", {
+                id: transactionId,
+            });
+        },
+    });
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogContent>
@@ -43,7 +59,7 @@ function DeleteTransactionDialog({ open, setOpen, transactionId }: Props) {
                             toast.loading("Deleting transaction...", {
                                 id: transactionId,
                             });
-                            // deleteMutation.mutate(transactionId);
+                            deleteMutation.mutate(transactionId);
                         }}
                     >
                         Continue
