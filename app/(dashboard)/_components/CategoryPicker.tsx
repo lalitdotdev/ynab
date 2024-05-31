@@ -29,8 +29,8 @@ interface Props {
 }
 
 function CategoryPicker({ type, onChange }: Props) {
-    const [open, setOpen] = React.useState(false);
-    const [value, setValue] = React.useState("");
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState("");
 
     useEffect(() => {
         if (!value) return;

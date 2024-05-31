@@ -46,6 +46,8 @@ const History = ({ userSettings }: { userSettings: UserSettings }) => {
         historyDataQuery.data && historyDataQuery.data.length > 0;
 
 
+
+
     return (
         <div className="container">
             <h2 className="mt-12 text-3xl font-bold">History</h2>
