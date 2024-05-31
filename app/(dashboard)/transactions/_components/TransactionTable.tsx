@@ -149,7 +149,10 @@ function TransactionTable({ from, to }: Props) {
             ).then((res) => res.json()),
     });
 
-
+    const handleExportCSV = (data: any[]) => {
+        const csv = generateCsv(csvConfig)(data);
+        download(csvConfig)(csv);
+    };
 
     const table = useReactTable({
         data: history.data || emptyData,
