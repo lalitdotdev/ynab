@@ -166,6 +166,17 @@ function TransactionTable({ from, to }: Props) {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    const categoriesOptions = useMemo(() => {
+        const categoriesMap = new Map();
+        history.data?.forEach((transaction) => {
+            categoriesMap.set(transaction.category, {
+                value: transaction.category,
+                label: `${transaction.categoryIcon} ${transaction.category}`,
+            });
+        });
+        const uniqueCategories = new Set(categoriesMap.values());
+        return Array.from(uniqueCategories);
+    }, [history.data]);
 
     return (
         <div className="w-full">
@@ -175,7 +186,7 @@ function TransactionTable({ from, to }: Props) {
                         <DataTableFacetedFilter
                             title="Category"
                             column={table.getColumn("category")}
-                        // options={categoriesOptions}
+                            options={categoriesOptions}
                         />
                     )}
                     {table.getColumn("type") && (
